@@ -1,5 +1,8 @@
 package com.alticelabs.models;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 public class User {
     private String id;
     private String name;
@@ -39,6 +42,19 @@ public class User {
 
     public void setSaldo(int saldo) {
         this.saldo = saldo;
+    }
+
+    public void applyEvents(List<UserEvent> userEvents) {
+        for (UserEvent event : userEvents) {
+            if (event.getEventType() == UserEventType.CHANGE_BALANCE) {
+                ChangeBalanceEvent changeBalanceEvent = (ChangeBalanceEvent) event;
+                int amount = changeBalanceEvent.getValue();
+                if (changeBalanceEvent.getOperation() == Operation.CREDIT)
+                    this.setSaldo(this.getSaldo() + amount);
+                else
+                    this.setSaldo(this.getSaldo() - amount);
+            }
+        }
     }
 
     @Override

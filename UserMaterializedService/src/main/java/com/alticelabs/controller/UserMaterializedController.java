@@ -23,14 +23,14 @@ public class UserMaterializedController {
         while (!leave) {
             showMenu();
             int s = scanner.nextInt();
-            if (s == 1) getUserAccont(scanner);
+            if (s == 1) getUserAccount(scanner);
             else if (s == 2) leave = true;
             else System.out.println("Opção inválida!");
         }
         System.out.println("Shutdown user service!");
     }
 
-    private void getUserAccont(Scanner scanner) {
+    private void getUserAccount(Scanner scanner) {
         System.out.println("Indica o id do usuário!");
         String id = scanner.next();
         User user = kafkaMaterializedView.getUser(id);

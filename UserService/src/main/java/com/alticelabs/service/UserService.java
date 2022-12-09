@@ -37,11 +37,11 @@ public class UserService {
     }
 
     public void createUser(User user) {
-        userRepository.saveUser(user);
         //Send user to kafka
-        UserEvent event = new CreateUserEvent(user, Timestamp.valueOf(LocalDateTime.now()));
-        ProducerRecord<String,UserEvent> createUserRecord = new ProducerRecord<>("users",user.getId(),event);
+        UserEvent userEvent = new CreateUserEvent(user, Timestamp.valueOf(LocalDateTime.now()));
+        ProducerRecord<String,UserEvent> createUserRecord = new ProducerRecord<>("users",user.getId(),userEvent);
         createUserRecord.headers().add("type",UserEventType.CREATE_USER.toString().getBytes(StandardCharsets.UTF_8));
+        userRepository.createUser(user);
         this.kafkaProducer.send(createUserRecord);
     }
 
@@ -53,10 +53,10 @@ public class UserService {
         User user = userRepository.getUser(id);
         if (user != null) {
             user.setSaldo(user.getSaldo() + amount);
-            userRepository.saveUser(user);
-            UserEvent event = new ChangeBalanceEvent(amount, Operation.CREDIT,Timestamp.valueOf(LocalDateTime.now()));
-            ProducerRecord<String,UserEvent> createUserRecord = new ProducerRecord<>("users",user.getId(),event);
+            UserEvent userEvent = new ChangeBalanceEvent(amount, Operation.CREDIT,Timestamp.valueOf(LocalDateTime.now()));
+            ProducerRecord<String,UserEvent> createUserRecord = new ProducerRecord<>("users",user.getId(),userEvent);
             createUserRecord.headers().add("type",UserEventType.CHANGE_BALANCE.toString().getBytes(StandardCharsets.UTF_8));
+            userRepository.saveUserEvent(user.getId(),userEvent);
             this.kafkaProducer.send(createUserRecord);
         }
         else System.out.println("Nenhum usuário foi encontrado com o ID pedido!");
@@ -67,14 +67,18 @@ public class UserService {
         if (user != null) {
             if (user.getSaldo() >= amount) {
                 user.setSaldo(user.getSaldo() - amount);
-                userRepository.saveUser(user);
-                UserEvent event = new ChangeBalanceEvent(amount, Operation.DEBIT,Timestamp.valueOf(LocalDateTime.now()));
-                ProducerRecord<String,UserEvent> createUserRecord = new ProducerRecord<>("users",user.getId(),event);
+                UserEvent userEvent = new ChangeBalanceEvent(amount, Operation.DEBIT,Timestamp.valueOf(LocalDateTime.now()));
+                ProducerRecord<String,UserEvent> createUserRecord = new ProducerRecord<>("users",user.getId(),userEvent);
                 createUserRecord.headers().add("type",UserEventType.CHANGE_BALANCE.toString().getBytes(StandardCharsets.UTF_8));
+                userRepository.saveUserEvent(user.getId(),userEvent);
                 this.kafkaProducer.send(createUserRecord);
             }
             else System.out.println("O user não tem saldo suficiente para a operação de débito!");
         }
         else System.out.println("Nenhum usuário foi encontrado com o ID pedido!");
+    }
+
+    public User getUserSnapshot(String id) {
+        return userRepository.getUserSnapshot(id);
     }
 }

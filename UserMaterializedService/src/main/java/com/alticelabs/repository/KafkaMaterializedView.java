@@ -1,7 +1,9 @@
 package com.alticelabs.repository;
 
 import com.alticelabs.models.*;
-import com.alticelabs.utils.*;
+import com.alticelabs.utils.UserDeserializer;
+import com.alticelabs.utils.UserEventSerde;
+import com.alticelabs.utils.UserSerializer;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.utils.Bytes;
@@ -37,8 +39,8 @@ public class KafkaMaterializedView {
         KStream<String, UserEvent> usersKStream = builder.stream("users");
         usersKStream.groupByKey().aggregate(User::new,USER_AGGREGATOR,
                 Materialized.<String,User, KeyValueStore<Bytes,byte[]>>as("mv_users")
-                            .withKeySerde(Serdes.String())
-                            .withValueSerde(userSerde));
+                        .withKeySerde(Serdes.String())
+                        .withValueSerde(userSerde));
     }
 
     private Properties configs() {
@@ -46,27 +48,27 @@ public class KafkaMaterializedView {
         props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG,"localhost:19092");
         props.put(StreamsConfig.APPLICATION_ID_CONFIG,"usersMV");
         props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.StringSerde.class);
-        props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG,UserEventSerde.class);
+        props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, UserEventSerde.class);
 
         return props;
     }
 
     private final Aggregator<String,UserEvent,User> USER_AGGREGATOR = (key, event, user) -> {
-      if (event.getEventType() == UserEventType.CREATE_USER) {
-          CreateUserEvent createUserEvent = (CreateUserEvent) event;
-          user = createUserEvent.getUser();
-          user.setTimeToUpdate(Timestamp.valueOf(LocalDateTime.now()).getTime() - createUserEvent.getTimestamp().getTime());
-      }
-      else if (event.getEventType() == UserEventType.CHANGE_BALANCE) {
-          ChangeBalanceEvent changeBalanceEvent = (ChangeBalanceEvent) event;
-          int amount = changeBalanceEvent.getValue();
-          if (changeBalanceEvent.getOperation() == Operation.CREDIT)
-              user.setSaldo(user.getSaldo() + amount);
-          else
-              user.setSaldo(user.getSaldo() - amount);
-          user.setTimeToUpdate(Timestamp.valueOf(LocalDateTime.now()).getTime() - changeBalanceEvent.getTimestamp().getTime());
-      }
-      return user;
+        if (event.getEventType() == UserEventType.CREATE_USER) {
+            CreateUserEvent createUserEvent = (CreateUserEvent) event;
+            user = createUserEvent.getUser();
+            user.setTimeToUpdate(Timestamp.valueOf(LocalDateTime.now()).getTime() - createUserEvent.getTimestamp().getTime());
+        }
+        else if (event.getEventType() == UserEventType.CHANGE_BALANCE) {
+            ChangeBalanceEvent changeBalanceEvent = (ChangeBalanceEvent) event;
+            int amount = changeBalanceEvent.getValue();
+            if (changeBalanceEvent.getOperation() == Operation.CREDIT)
+                user.setSaldo(user.getSaldo() + amount);
+            else
+                user.setSaldo(user.getSaldo() - amount);
+            user.setTimeToUpdate(Timestamp.valueOf(LocalDateTime.now()).getTime() - changeBalanceEvent.getTimestamp().getTime());
+        }
+        return user;
     };
 
     public User getUser(String id) {

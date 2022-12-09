@@ -2,6 +2,9 @@ package com.alticelabs.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+
 @JsonIgnoreProperties("name")
 public class User {
     private String id;
@@ -17,6 +20,7 @@ public class User {
     public User(String id, int saldo) {
         this.id = id;
         this.saldo = saldo;
+        this.timeToUpdate = Timestamp.valueOf(LocalDateTime.now()).getTime();
     }
 
     public String getId() {
@@ -42,7 +46,6 @@ public class User {
     public void setTimeToUpdate(long timeToUpdate) {
         this.timeToUpdate = timeToUpdate;
     }
-
 
     @Override
     public String toString() {

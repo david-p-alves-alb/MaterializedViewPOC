@@ -28,10 +28,21 @@ public class UserController {
             else if (s == 2) creditBalance(scanner);
             else if (s == 3) debitBalance(scanner);
             else if (s == 4) getUserAccont(scanner);
-            else if (s == 5) leave = true;
+            else if (s == 5) getUserSnapshot(scanner);
+            else if (s == 6) leave = true;
             else System.out.println("Opção inválida!");
         }
         System.out.println("Shutdown user service!");
+    }
+
+    private void getUserSnapshot(Scanner scanner) {
+        System.out.println("Indica o id do usuário!");
+        String id = scanner.next();
+        User user = userService.getUserSnapshot(id);
+        if (user != null) {
+            System.out.println(user);
+        }
+        else System.out.println("Nenhum usuário foi encontrado com o ID pedido!");
     }
 
     private void getUserAccont(Scanner scanner) {
@@ -74,6 +85,7 @@ public class UserController {
         System.out.println("2-Depositar saldo num user!");
         System.out.println("3-Levantar saldo de um user!");
         System.out.println("4-Visualizar conta de um user!");
-        System.out.println("5-Sair!");
+        System.out.println("5-Visualizar snapshot do user!");
+        System.out.println("6-Sair!");
     }
 }

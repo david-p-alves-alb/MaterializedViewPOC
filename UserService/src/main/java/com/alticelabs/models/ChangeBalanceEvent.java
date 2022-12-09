@@ -4,7 +4,6 @@ import java.sql.Timestamp;
 
 public class ChangeBalanceEvent extends UserEvent{
     private int value;
-
     private Operation operation;
     private Timestamp timestamp;
 
