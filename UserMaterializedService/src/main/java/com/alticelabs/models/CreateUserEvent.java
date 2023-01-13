@@ -6,13 +6,12 @@ public class CreateUserEvent extends UserEvent{
     private User user;
     private Timestamp timestamp;
 
-
-    public CreateUserEvent() {
+    private CreateUserEvent() {
         super(UserEventType.CREATE_USER);
     }
 
     public CreateUserEvent(  User user, Timestamp timestamp) {
-        super(UserEventType.CREATE_USER);
+        super(UserEventType.CREATE_USER,user.getId());
         this.user = user;
         this.timestamp = timestamp;
     }

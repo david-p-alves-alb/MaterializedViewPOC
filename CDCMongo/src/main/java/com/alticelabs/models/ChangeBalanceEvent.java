@@ -1,21 +1,21 @@
 package com.alticelabs.models;
 
-import java.sql.Timestamp;
+import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 
-public class ChangeBalanceEvent extends UserEvent{
+import java.util.Date;
+
+public class ChangeBalanceEvent extends UserEvent {
     private int value;
     private Operation operation;
-    private Timestamp timestamp;
 
-    private ChangeBalanceEvent() {
+    public ChangeBalanceEvent() {
         super(UserEventType.CHANGE_BALANCE);
     }
 
-    public ChangeBalanceEvent(String id, int value,Operation operation, Timestamp timestamp) {
-        super(UserEventType.CHANGE_BALANCE,id);
+    public ChangeBalanceEvent(String id, int value,Operation operation, Date timestamp) {
+        super(UserEventType.CHANGE_BALANCE,id,timestamp);
         this.value = value;
         this.operation = operation;
-        this.timestamp = timestamp;
     }
 
     public int getValue() {
@@ -24,14 +24,6 @@ public class ChangeBalanceEvent extends UserEvent{
 
     public void setValue(int value) {
         this.value = value;
-    }
-
-    public Timestamp getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(Timestamp timestamp) {
-        this.timestamp = timestamp;
     }
 
     public Operation getOperation() {
@@ -44,10 +36,9 @@ public class ChangeBalanceEvent extends UserEvent{
 
     @Override
     public String toString() {
-        return "ChangeBalanceEvent{" +
+        return super.toString() + "ChangeBalanceEvent{" +
                 "value=" + value +
                 ", operation=" + operation +
-                ", timestamp=" + timestamp +
                 '}';
     }
 }

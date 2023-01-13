@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.alticelabs</groupId>
-	<artifactId>userService</artifactId>
-	<version>1</version>
-	<name>userService</name>
-	<description>Demo microservice for User Service</description>
+	<artifactId>userES</artifactId>
+	<version>1.0</version>
+	<name>userES</name>
+	<description>Demo of a microservice using ES</description>
 	<properties>
 		<java.version>11</java.version>
 	</properties>
@@ -21,6 +21,7 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-mongodb</artifactId>
 		</dependency>
+
 		<dependency>
 			<groupId>org.apache.kafka</groupId>
 			<artifactId>kafka-clients</artifactId>
@@ -31,7 +32,7 @@
 			<artifactId>jackson-databind</artifactId>
 			<version>2.14.0</version>
 		</dependency>
-	</dependencies>
+    </dependencies>
 
 	<build>
 		<plugins>
